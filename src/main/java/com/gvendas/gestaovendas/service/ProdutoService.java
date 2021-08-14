@@ -47,7 +47,7 @@ public class ProdutoService {
         produtoRepository.delete(produto);
     }
 
-    private Produto validaProdutoExiste(Long idCategoria, Long idProduto){
+    private Produto validaProdutoExiste(Long idCategoria, Long idProduto) {
         Optional<Produto> produto = findById(idCategoria, idProduto);
         if (produto.isEmpty()) {
             throw new EmptyResultDataAccessException(1);
