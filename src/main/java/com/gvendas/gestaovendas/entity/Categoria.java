@@ -1,24 +1,35 @@
 package com.gvendas.gestaovendas.entity;
 
-import org.hibernate.validator.constraints.Length;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
-@Table(name = "categoria") //O nome tem que ser igual o do banco de dados
+@Table(name = "categoria")
 public class Categoria {
 
-    @Id //indica que é primary key
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "codigo")
     private Long codigo;
 
-    @Column(name = "nome") //se o nome do atributo for igual o da tabela do db não precisa a anotação
-    @NotBlank(message = "Nome")
-    @Length(min = 3, max = 50, message = "Nome")
+    @Column(name = "nome")
     private String nome;
+
+    public Categoria() {
+    }
+
+    public Categoria(Long codigo) {
+        this.codigo = codigo;
+    }
+
+    public Categoria(String nome) {
+        this.nome = nome;
+    }
+
+    public Categoria(Long codigo, String nome) {
+        this.codigo = codigo;
+        this.nome = nome;
+    }
 
     public Long getCodigo() {
         return codigo;
