@@ -20,21 +20,21 @@ public class ProdutoService {
     @Autowired
     private CategoriaService categoriaService;
 
-    public List<Produto> findAll(Long idCategoria){
+    public List<Produto> findAll(Long idCategoria) {
         return produtoRepository.findByCategoriaCodigo(idCategoria);
     }
 
-    public Optional<Produto> findById(Long idCategoria, Long idProduto){
-        return  produtoRepository.findById(idCategoria,idProduto);
+    public Optional<Produto> findById(Long idCategoria, Long idProduto) {
+        return produtoRepository.findById(idCategoria, idProduto);
     }
 
-    public  Produto save(Long idCategoria, Produto produto){
+    public Produto save(Long idCategoria, Produto produto) {
         validarCategoriaDoProdutoExiste(idCategoria);
         validarProdutoDuplicado(produto);
         return produtoRepository.save(produto);
     }
 
-    public Produto update(Long idCategoria, Long idProduto, Produto produto){
+    public Produto update(Long idCategoria, Long idProduto, Produto produto) {
         Produto produtoSalvar = validaProdutoExiste(idCategoria, idProduto);
         validarCategoriaDoProdutoExiste(idCategoria);
         validarProdutoDuplicado(produto);
@@ -42,7 +42,7 @@ public class ProdutoService {
         return produtoRepository.save(produtoSalvar);
     }
 
-    public void delete(Long idCategoria, Long idProduto){
+    public void delete(Long idCategoria, Long idProduto) {
         Produto produto = validaProdutoExiste(idCategoria, idProduto);
         produtoRepository.delete(produto);
     }
@@ -55,18 +55,30 @@ public class ProdutoService {
         return produto.get();
     }
 
-    private void validarProdutoDuplicado(Produto produto){
-        Optional<Produto> produtoPorDescricao = produtoRepository.findByDescricaoAndCategoriaCodigo(produto.getDescricao(),produto.getCategoria().getCodigo());
-        if(produtoPorDescricao.isPresent() && produtoPorDescricao.get().getCodigo() != produto.getCodigo()){
+    protected void atualizarQuantidade(Produto produto) {
+        produtoRepository.save(produto);
+    }
+
+    protected Produto validaProdutoExiste(Long idProduto) {
+        Optional<Produto> produto = produtoRepository.findById(idProduto);
+        if (produto.isEmpty()) {
+            throw new RegraNegocioException(String.format("Produto de código %s não encontrado", idProduto));
+        }
+        return produto.get();
+    }
+
+    private void validarProdutoDuplicado(Produto produto) {
+        Optional<Produto> produtoPorDescricao = produtoRepository.findByDescricaoAndCategoriaCodigo(produto.getDescricao(), produto.getCategoria().getCodigo());
+        if (produtoPorDescricao.isPresent() && !produtoPorDescricao.get().getCodigo().equals(produto.getCodigo())) {
             throw new RegraNegocioException(String.format("O produto %s já está cadastrado para esta categoria", produto.getDescricao()));
         }
     }
 
-    private void validarCategoriaDoProdutoExiste(Long idCategoria){
-        if(idCategoria == null){
+    private void validarCategoriaDoProdutoExiste(Long idCategoria) {
+        if (idCategoria == null) {
             throw new RegraNegocioException("A categoria não pode ser nula");
         }
-        if (categoriaService.findById(idCategoria).isEmpty()){
+        if (categoriaService.findById(idCategoria).isEmpty()) {
             throw new RegraNegocioException(String.format("A categoria de código %d não existe no cadastro", idCategoria));
         }
     }

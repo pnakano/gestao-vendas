@@ -24,6 +24,7 @@ public class GestaoVendasExceptionHandler extends ResponseEntityExceptionHandler
     public static final String CONST_VALIDATION_NOT_NULL = "NotNull";
     public static final String CONST_VALIDATION_LENGTH = "Length";
     public static final String CONST_VALIDATION_PATTERN = "Pattern";
+    public static final String CONST_VALIDATION_MIN = "Min";
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -81,6 +82,10 @@ public class GestaoVendasExceptionHandler extends ResponseEntityExceptionHandler
         }
         if (CONST_VALIDATION_PATTERN.equals(fieldError.getCode())) {
             return fieldError.getDefaultMessage().concat(" está com um formato inválido");
+        }
+        if (CONST_VALIDATION_MIN.equals(fieldError.getCode())) {
+            return fieldError.getDefaultMessage().concat(String.format(" deve ser maior ou igual a %s",
+                    fieldError.getArguments()[1]));
         }
         return fieldError.toString();
     }
